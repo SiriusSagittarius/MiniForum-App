@@ -4,12 +4,14 @@ from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from forum_app.models import Comment, Post
 from forum_app.permissions import IsOwnerOrReadOnly
 from forum_app.serializers import CommentSerializer, PostSerializer
+from forum_app.throttling import PostThrottle
 # Create your views here.
 
 class PostListCreateView(ListCreateAPIView):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
+    throttle_classes = [PostThrottle]
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
@@ -23,6 +25,7 @@ class CommentListCreateView(ListCreateAPIView):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
+    throttle_classes = [PostThrottle]
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
